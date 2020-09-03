@@ -28,8 +28,6 @@ module.exports = function (api, options) {
     const gitignorePath = api.resolve('.gitignore')
     let content
 
-    console.log(gitignorePath)
-
     if (fs.existsSync(gitignorePath)) {
       content = fs.readFileSync(gitignorePath, { encoding: 'utf8' })
     } else {
