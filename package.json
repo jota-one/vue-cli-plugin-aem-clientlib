@@ -1,0 +1,32 @@
+{
+  "name": "@jota-one/vue-cli-plugin-aem-clientlib",
+  "version": "0.1.0",
+  "description": "Build a Vue app as a clientlib in AEM",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jota-one/vue-cli-plugin-aem-clientlib.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-cli",
+    "aem",
+    "clientlib",
+    "bundle"
+  ],
+  "author": "Juniors at Work",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jota-one/vue-cli-plugin-aem-clientlib/issues"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.1",
+    "ora": "^5.0.0",
+    "chalk": "^4.1.0",
+    "zip-dir": "^1.0.2",
+    "xml2js-es6-promise": "^1.1.1",
+    "xml2js": "^0.4.23",
+    "moment": "^2.27.0",
+    "replace": "^1.2.0"
+  }
+}
