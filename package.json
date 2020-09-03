@@ -1,6 +1,6 @@
 {
   "name": "@jota-one/vue-cli-plugin-aem-clientlib",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Build a Vue app as a clientlib in AEM",
   "main": "index.js",
   "repository": {
