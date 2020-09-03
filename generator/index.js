@@ -1,3 +1,4 @@
+const fs = require('fs')
 module.exports = function (api, options) {
   // copy build template
   if (options.installTemplate) {
@@ -16,9 +17,28 @@ module.exports = function (api, options) {
       pluginOptions: {
         buildaem: {
           name: options.projectName,
-          clientlibs: [options.projectName]
+          aemPackageInternalPath: options.aemPackageInternalPath
         }
       }
+    }
+  })
+
+  // extend (or create) .gitignore file to ignore build directories
+  api.onCreateComplete(async () => {
+    const gitignorePath = api.resolve('.gitignore')
+    let content
+
+    console.log(gitignorePath)
+
+    if (fs.existsSync(gitignorePath)) {
+      content = fs.readFileSync(gitignorePath, { encoding: 'utf8' })
+    } else {
+      content = ''
+    }
+
+    if (content.indexOf('/build/dist*') === -1) {
+      content += `\n\n# Jota AEM build\n/build/dist*\n${options.projectName}*.zip`
+      fs.writeFileSync(gitignorePath, content)
     }
   })
 }

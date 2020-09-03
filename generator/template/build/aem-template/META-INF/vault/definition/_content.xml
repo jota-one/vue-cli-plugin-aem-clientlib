@@ -8,7 +8,7 @@
     jcr:primaryType="vlt:PackageDefinition"
     buildCount="1"
     builtWith="Adobe Experience Manager-6.1.0.SP1"
-    group="Jota AEM"
+    group="<%= aemPackageGroup %>"
     lastUnwrapped="{Date}2018-01-08T11:47:16.556+01:00"
     lastUnwrappedBy="admin"
     lastWrapped="{Date}2018-01-08T11:47:16.556+01:00"
@@ -19,7 +19,7 @@
         <f0
             jcr:primaryType="nt:unstructured"
             mode="replace"
-            root="/etc/clientlibs/frontend/<%= projectName %>"
+            root="<%= aemPackageInternalPath %>/<%= projectName %>"
             rules="[]"/>
     </filter>
 </jcr:root>

@@ -6,16 +6,16 @@ const fs = require('fs-extra')
 const parseString = require('xml2js-es6-promise')
 const xml2js = require('xml2js')
 const moment = require('moment')
-const replace = require('replace')
 
 module.exports = function (api, options, rootOptions) {
-  const insideAemPackagePath = 'jcr_root/etc/clientlibs/frontend'
+  const prebuild = require(api.resolve(path.join('build', 'pre-build')))
+  const postbuild = require(api.resolve(path.join('build', 'post-build')))
   const resolvedOptions = Object.assign({}, {
     name: 'jota-webpack',
     template: 'build/aem-template',
-    dest: 'distaem',
-    clientlibs: []
+    dest: 'build/distaem'
   }, options.pluginOptions && options.pluginOptions.buildaem ? options.pluginOptions.buildaem : {})
+  const insideAemPackagePath = `jcr_root${resolvedOptions.aemPackageInternalPath}`
   const config = {
     assetsRoot: resolvedOptions.dest,
     aemTemplate: resolvedOptions.template,
@@ -114,7 +114,11 @@ module.exports = function (api, options, rootOptions) {
       mode: 'production',
       dest: 'dist'
     }
-    await api.service.run('build')
+
+    // run pre build action, then build, then post build action
+    await prebuild()
+    await api.service.run('build', { dest: api.resolve('build/dist') })
+    await postbuild()
 
     // run the AEM build
     try {

@@ -13,6 +13,6 @@
 <entry key="packageFormatVersion">2</entry>
 <entry key="description"/>
 <entry key="lastWrapped">2018-01-08T11:47:16.556+01:00</entry>
-<entry key="group">Jota AEM</entry>
+<entry key="group"><%= aemPackageGroup %></entry>
 <entry key="lastWrappedBy">admin</entry>
 </properties>
