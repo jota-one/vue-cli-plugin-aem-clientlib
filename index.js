@@ -95,7 +95,7 @@ module.exports = function (api, options, rootOptions) {
       if (err) throw err
 
       spinner.stop()
-      console.log(chalk.green('  Zip created and saved in /%s.'), bundleName)
+      console.log(chalk.green('  Zip created and saved in /%s.'), path.join('build', bundleName))
     })
   }
 
