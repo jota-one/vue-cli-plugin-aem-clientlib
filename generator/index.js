@@ -17,7 +17,10 @@ module.exports = function (api, options) {
       pluginOptions: {
         buildaem: {
           name: options.projectName,
-          aemPackageInternalPath: options.aemPackageInternalPath
+          aemPackageInternalPath: options.aemPackageInternalPath,
+          devBuildSuffix: options.devBuildSuffix,
+          ...(options.preBuildPath ? { preBuildPath: options.preBuildPath } : {}),
+          ...(options.postBuildPath ? { postBuildPath: options.postBuildPath } : {})
         }
       }
     }
@@ -35,7 +38,7 @@ module.exports = function (api, options) {
     }
 
     if (content.indexOf('/build/dist*') === -1) {
-      content += `\n\n# Jota AEM build\n/build/dist*\n${options.projectName}*.zip`
+      content += `\n\n# Jota AEM build\n/build/dist*\n/build/${options.projectName}*.zip`
       fs.writeFileSync(gitignorePath, content)
     }
   })

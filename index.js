@@ -8,8 +8,6 @@ const xml2js = require('xml2js')
 const moment = require('moment')
 
 module.exports = function (api, options, rootOptions) {
-  const prebuild = require(api.resolve(path.join('build', 'pre-build')))
-  const postbuild = require(api.resolve(path.join('build', 'post-build')))
   const resolvedOptions = Object.assign({}, {
     name: 'jota-webpack',
     template: 'build/aem-template',
@@ -31,7 +29,7 @@ module.exports = function (api, options, rootOptions) {
 
     let suffix = ''
     if (args.snapshot) {
-      suffix = '-SNAPSHOT'
+      suffix = resolvedOptions.devBuildSuffix || ''
     }
 
 
@@ -93,7 +91,7 @@ module.exports = function (api, options, rootOptions) {
 
     spinner.start()
 
-    zip(api.resolve(config.assetsRoot), { saveTo: api.resolve(bundleName) }, err => {
+    zip(api.resolve(config.assetsRoot), { saveTo: api.resolve(path.join('build', bundleName)) }, err => {
       if (err) throw err
 
       spinner.stop()
@@ -116,9 +114,13 @@ module.exports = function (api, options, rootOptions) {
     }
 
     // run pre build action, then build, then post build action
-    await prebuild()
+    if (resolvedOptions.preBuildPath && fs.existsSync(api.resolve(resolvedOptions.preBuildPath))) {
+      await require(api.resolve(resolvedOptions.preBuildPath))(api)
+    }
     await api.service.run('build', { dest: api.resolve('build/dist') })
-    await postbuild()
+    if (resolvedOptions.postBuildPath && fs.existsSync(api.resolve(resolvedOptions.postBuildPath))) {
+      await require(api.resolve(resolvedOptions.postBuildPath))(api, api.resolve('build/dist'))
+    }
 
     // run the AEM build
     try {

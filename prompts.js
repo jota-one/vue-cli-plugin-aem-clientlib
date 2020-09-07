@@ -8,10 +8,45 @@ module.exports = pkg => {
       default: pkg.name
     },
     {
+      name: 'devBuildSuffix',
+      type: 'input',
+      message: 'Define a suffix to identify dev bundles',
+      validate: input => !!input,
+      default: '-SNAPSHOT'
+    },
+    {
       name: 'installTemplate',
       type: 'confirm',
       message: 'A build template will be installed under the "/build" directory of your project. Choose "no" if you want to handle it yourself. Otherwise keep "yes".',
       default: true
+    },
+    {
+      name: 'preBuild',
+      type: 'confirm',
+      message: 'Do you need to execute some script before the vue-cli-service build ?',
+      default: false
+    },
+    {
+      name: 'preBuildPath',
+      type: 'input',
+      message: 'Enter the path (relative to your project root) to the file containing the pre build script.',
+      validate: input => !!input,
+      when: answers => answers.preBuild,
+      default: 'scripts/prebuild.js'
+    },
+    {
+      name: 'postBuild',
+      type: 'confirm',
+      message: 'Do you need to execute some script after the vue-cli-service build (but before the bundling into a clientlib) ?',
+      default: false
+    },
+    {
+      name: 'postBuildPath',
+      type: 'input',
+      message: 'Enter the path (relative to your project root) to the file containing the post build script.',
+      validate: input => !!input,
+      when: answers => answers.postBuild,
+      default: 'scripts/postbuild.js'
     },
     {
       name: 'aemPackageInternalPath',
