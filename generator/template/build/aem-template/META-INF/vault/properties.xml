@@ -3,16 +3,16 @@
 <properties>
 <comment>FileVault Package Properties</comment>
 <entry key="createdBy">admin</entry>
-<entry key="name"><%= projectName %></entry>
-<entry key="lastModified">2018-01-08T11:47:16.556+01:00</entry>
+<entry key="name">__NAME__</entry>
+<entry key="lastModified">__LAST_MODIFIED__</entry>
 <entry key="lastModifiedBy">admin</entry>
 <entry key="created">2018-05-07T06:36:16.587+01:00</entry>
 <entry key="buildCount">1</entry>
-<entry key="version"/>
+<entry key="version">__VERSION__</entry>
 <entry key="dependencies"/>
 <entry key="packageFormatVersion">2</entry>
 <entry key="description"/>
-<entry key="lastWrapped">2018-01-08T11:47:16.556+01:00</entry>
-<entry key="group"><%= aemPackageGroup %></entry>
+<entry key="lastWrapped">__LAST_WRAPPED__</entry>
+<entry key="group">__AEM_GROUP__</entry>
 <entry key="lastWrappedBy">admin</entry>
 </properties>

@@ -18,6 +18,7 @@ module.exports = function (api, options) {
         buildaem: {
           name: options.projectName,
           aemPackageInternalPath: options.aemPackageInternalPath,
+          aemPackageGroup: options.aemPackageGroup,
           devBuildSuffix: options.devBuildSuffix,
           ...(options.preBuildPath ? { preBuildPath: options.preBuildPath } : {}),
           ...(options.postBuildPath ? { postBuildPath: options.postBuildPath } : {})

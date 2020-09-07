@@ -8,18 +8,18 @@
     jcr:primaryType="vlt:PackageDefinition"
     buildCount="1"
     builtWith="Adobe Experience Manager-6.1.0.SP1"
-    group="<%= aemPackageGroup %>"
+    group="__AEM_GROUP__"
     lastUnwrapped="{Date}2018-01-08T11:47:16.556+01:00"
     lastUnwrappedBy="admin"
     lastWrapped="{Date}2018-01-08T11:47:16.556+01:00"
     lastWrappedBy="admin"
-    name="<%= projectName %>"
+    name="__NAME__"
     version="">
     <filter jcr:primaryType="nt:unstructured">
         <f0
             jcr:primaryType="nt:unstructured"
             mode="replace"
-            root="<%= aemPackageInternalPath %>/<%= projectName %>"
+            root="<%= aemPackageInternalPath %>/__NAME__"
             rules="[]"/>
     </filter>
 </jcr:root>
