@@ -65,20 +65,25 @@ module.exports = function (api, options, rootOptions) {
     await fs.copy(options.outputDir, api.resolve(assetsAemSubDirectory))
 
     // generate js.txt and css.txt reference files
-    let pathToJsFiles = api.resolve(assetsAemSubDirectory)
-    let pathToCssFiles = pathToJsFiles
-    if (args.mode === 'production') {
-      pathToJsFiles = path.join(pathToJsFiles, 'js')
-      pathToCssFiles = path.join(pathToCssFiles, 'css')
+    const baseJs = '#base=js\napp.js'
+    fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
+
+    if (options.css && options.css.extract) {
+      let baseCss = '#base=css\n'
+      let cssFiles
+      let cssPath = [ 'css' ]
+      if (typeof options.css.extract === 'object' && options.css.extract.filename) {
+        cssPath = options.css.extract.filename.split('/')
+        cssFiles = [ cssPath.pop() ]
+        if (cssPath.join('/') !== 'css') {
+          baseCss = `#base=${cssPath.join('/')}\n`
+        }
+      } else {
+        cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
+          .filter(file => file.slice(-4) === '.css')
+      }
+      fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
     }
-    const jsFiles = fs.readdirSync(pathToJsFiles).filter(file => file.slice(-3) === '.js')
-    const cssFiles = fs.readdirSync(pathToCssFiles).filter(file => file.slice(-4) === '.css')
-
-    const baseJs = args.mode === 'production' ? '#base=js\n' : '#base=.\n'
-    const baseCss = args.mode === 'production' ? '#base=css\n' : '#base=.\n'
-
-    fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs + jsFiles.join('\n'))
-    fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
 
     spinner.start()
 
@@ -99,25 +104,51 @@ module.exports = function (api, options, rootOptions) {
       '--snapshot': 'append -SNAPSHOT to the generated zip name'
     }
   }, async function (args) {
-    const defaultArgs = {
+    const defaultBuildArgs = {
       mode: 'production',
-      dest: 'dist'
+      dest: api.resolve('build/dist')
     }
+    const defaultAemArgs = {
+      snapshot: false
+    }
+
+    // optimize webpack build for an AEM deployment
+    api.configureWebpack({
+      optimization: {
+        splitChunks: {
+          chunks: 'async',
+          maxInitialRequests: 1
+        }
+      },
+      output: {
+        // Avoid conflicts with other vue apps (e.g. chat)
+        jsonpFunction: `${resolvedOptions.name}WebpackJsonp`,
+        // Force filename without hash for A€M
+        filename: 'js/app.js',
+        // Force hash in chunks filename for AEM
+        // to avoid risks due to long time TTL
+        chunkFilename: 'js/[name].[hash:8].js'
+      }
+    })
+
+    api.chainWebpack(config => {
+      config.plugins.delete('prefetch')
+    })
 
     // run pre build action, then build, then post build action
     if (resolvedOptions.preBuildPath && fs.existsSync(api.resolve(resolvedOptions.preBuildPath))) {
       await require(api.resolve(resolvedOptions.preBuildPath))(api, resolvedOptions)
     }
-    await api.service.run('build', { dest: api.resolve('build/dist') })
+    await api.service.run('build', { ...defaultBuildArgs, ...args })
 
     let result = {}
     if (resolvedOptions.postBuildPath && fs.existsSync(api.resolve(resolvedOptions.postBuildPath))) {
-      result = await require(api.resolve(resolvedOptions.postBuildPath))(api, resolvedOptions, api.resolve('build/dist'))
+      result = await require(api.resolve(resolvedOptions.postBuildPath))(api, resolvedOptions, args.dest || defaultBuildArgs.dest)
     }
 
     // run the AEM build
     try {
-      return aem(Object.assign({}, defaultArgs, args), { ...resolvedOptions, ...result })
+      return aem({ ...defaultBuildArgs, ...defaultAemArgs, ...args }, { ...resolvedOptions, ...result })
     } catch (e) {
       console.log('Error:', e.getMessage())
     }
