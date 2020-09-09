@@ -68,20 +68,25 @@ module.exports = function (api, options, rootOptions) {
     const baseJs = '#base=js\napp.js'
     fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
 
-    if (options.css && options.css.extract) {
-      let baseCss = '#base=css\n'
-      let cssFiles
-      let cssPath = [ 'css' ]
-      if (typeof options.css.extract === 'object' && options.css.extract.filename) {
-        cssPath = options.css.extract.filename.split('/')
-        cssFiles = [ cssPath.pop() ]
-        if (cssPath.join('/') !== 'css') {
-          baseCss = `#base=${cssPath.join('/')}\n`
-        }
-      } else {
-        cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
-          .filter(file => file.slice(-4) === '.css')
+    let cssFiles = []
+    let baseCss = '#base=css\n'
+    let cssPath = [ 'css' ]
+    let done = false
+    if (options.css && options.css.extract && typeof options.css.extract === 'object' && options.css.extract.filename) {
+      cssPath = options.css.extract.filename.split('/')
+      cssFiles = [ cssPath.pop() ]
+      if (cssPath.join('/') !== 'css') {
+        baseCss = `#base=${cssPath.join('/')}\n`
       }
+      done = true
+    }
+
+    if (!done && fs.existsSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))) {
+      cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
+        .filter(file => file.slice(-4) === '.css')
+    }
+
+    if (cssFiles.length > 0) {
       fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
     }
 
