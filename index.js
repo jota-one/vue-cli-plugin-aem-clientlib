@@ -148,7 +148,7 @@ module.exports = function (api, options, rootOptions) {
 
     let result = {}
     if (resolvedOptions.postBuildPath && fs.existsSync(api.resolve(resolvedOptions.postBuildPath))) {
-      result = await require(api.resolve(resolvedOptions.postBuildPath))(api, resolvedOptions, args.dest || defaultBuildArgs.dest)
+      result = await require(api.resolve(resolvedOptions.postBuildPath))(api, resolvedOptions, { ...defaultBuildArgs, ...defaultAemArgs, ...args })
     }
 
     // run the AEM build
