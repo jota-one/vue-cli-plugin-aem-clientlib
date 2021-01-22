@@ -92,6 +92,10 @@ module.exports = function (api, options, rootOptions) {
 
     spinner.start()
 
+    if (bundleOptions.postAemBuildPath && fs.existsSync(api.resolve(bundleOptions.postAemBuildPath))) {
+      await require(api.resolve(resolvedOptions.postAemBuildPath))(api, bundleOptions, args)
+    }
+
     zip(api.resolve(bundleOptions.dest), { saveTo: api.resolve(path.join('build', bundleName)) }, err => {
       if (err) throw err
 
