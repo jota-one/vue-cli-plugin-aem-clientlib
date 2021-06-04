@@ -99,11 +99,14 @@ module.exports = function (api, options, rootOptions) {
       await require(api.resolve(resolvedOptions.postAemBuildPath))(api, bundleOptions, args)
     }
 
-    zip(api.resolve(bundleOptions.dest), { saveTo: api.resolve(path.join('build', bundleName)) }, err => {
+    // define zip file destination, based on its source directory.
+    const src = api.resolve(bundleOptions.dest)
+    const dest = src.split(path.sep).slice(0, -1).join(path.sep)
+    zip(src, { saveTo: path.join(dest, bundleName) }, err => {
       if (err) throw err
 
       spinner.stop()
-      console.log(chalk.green('  Zip created and saved in /%s.'), path.join('build', bundleName))
+      console.log(chalk.green('  Zip created and saved in /%s.'), path.join(dest, bundleName))
     })
   }
 

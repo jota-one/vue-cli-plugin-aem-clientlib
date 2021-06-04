@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [Unreleased]
 - All the code is released \o/
 
+## [0.7.1] - 2021-06-04
+### Changed
+- Ensure that the generated zip file is saved next to its source directory and not systematically in the `/build` directory.
+
 ## [0.7.0] - 2021-06-04
 ### Added
 - One `isClientLib` plugin option, defaults to `true`. If set to `false` the script will consider that we just want to bundle some files in a CRX package, but won't create the specific clientlib files (js.txt and css.txt).
@@ -17,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0] - 2021-01-22
 TODO
 
-[Unreleased]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.0...develop
+[Unreleased]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.1...develop
+[0.7.1]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/releases/tag/0.6.0
