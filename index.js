@@ -11,7 +11,8 @@ module.exports = function (api, options, rootOptions) {
   const resolvedOptions = Object.assign({}, {
     name: 'jota-webpack',
     template: 'build/aem-template',
-    dest: 'build/distaem'
+    dest: 'build/distaem',
+    isClientLib: true,
   }, options.pluginOptions && options.pluginOptions.buildaem ? options.pluginOptions.buildaem : {})
 
   async function aem (args, bundleOptions) {
@@ -28,10 +29,10 @@ module.exports = function (api, options, rootOptions) {
     const bundleNameNoExt = bundleOptions.name + '-' + version + suffix
     const bundleName = bundleNameNoExt + '.zip'
 
-    // remove previous dist directory
+    // remove previous distaem directory
     await remove(api.resolve(bundleOptions.dest))
 
-    // create fresh dist directory
+    // create fresh distaem directory
     mkdirp(api.resolve(bundleOptions.dest))
 
     // copy template content
@@ -62,32 +63,34 @@ module.exports = function (api, options, rootOptions) {
     })
 
     console.log(chalk.cyan(' copy webpack build...'))
-    await fs.copy(options.outputDir, api.resolve(assetsAemSubDirectory))
+    await fs.copy(bundleOptions.aemSource || options.outputDir, api.resolve(assetsAemSubDirectory))
 
-    // generate js.txt and css.txt reference files
-    const baseJs = '#base=js\napp.js'
-    fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
+    if (bundleOptions.isClientLib) {
+      // generate js.txt and css.txt reference files
+      const baseJs = '#base=js\napp.js'
+      fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
 
-    let cssFiles = []
-    let baseCss = '#base=css\n'
-    let cssPath = [ 'css' ]
-    let done = false
-    if (options.css && options.css.extract && typeof options.css.extract === 'object' && options.css.extract.filename) {
-      cssPath = options.css.extract.filename.split('/')
-      cssFiles = [ cssPath.pop() ]
-      if (cssPath.join('/') !== 'css') {
-        baseCss = `#base=${cssPath.join('/')}\n`
+      let cssFiles = []
+      let baseCss = '#base=css\n'
+      let cssPath = ['css']
+      let done = false
+      if (options.css && options.css.extract && typeof options.css.extract === 'object' && options.css.extract.filename) {
+        cssPath = options.css.extract.filename.split('/')
+        cssFiles = [cssPath.pop()]
+        if (cssPath.join('/') !== 'css') {
+          baseCss = `#base=${cssPath.join('/')}\n`
+        }
+        done = true
       }
-      done = true
-    }
 
-    if (!done && fs.existsSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))) {
-      cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
-        .filter(file => file.slice(-4) === '.css')
-    }
+      if (!done && fs.existsSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))) {
+        cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
+          .filter(file => file.slice(-4) === '.css')
+      }
 
-    if (cssFiles.length > 0) {
-      fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
+      if (cssFiles.length > 0) {
+        fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
+      }
     }
 
     spinner.start()
@@ -121,29 +124,6 @@ module.exports = function (api, options, rootOptions) {
       snapshot: false
     }
 
-    // optimize webpack build for an AEM deployment
-    api.configureWebpack({
-      optimization: {
-        splitChunks: {
-          chunks: 'async',
-          maxInitialRequests: 1
-        }
-      },
-      output: {
-        // Avoid conflicts with other vue apps (e.g. chat)
-        jsonpFunction: `${resolvedOptions.name}WebpackJsonp`,
-        // Force filename without hash for A€M
-        filename: 'js/app.js',
-        // Force hash in chunks filename for AEM
-        // to avoid risks due to long time TTL
-        chunkFilename: 'js/[name].[hash:8].js'
-      }
-    })
-
-    api.chainWebpack(config => {
-      config.plugins.delete('prefetch')
-    })
-
     // run pre build action, then build, then post build action
     if (resolvedOptions.preBuildPath && fs.existsSync(api.resolve(resolvedOptions.preBuildPath))) {
       await require(api.resolve(resolvedOptions.preBuildPath))(api, resolvedOptions)
@@ -155,7 +135,7 @@ module.exports = function (api, options, rootOptions) {
       result = await require(api.resolve(resolvedOptions.postBuildPath))(api, resolvedOptions, { ...defaultBuildArgs, ...defaultAemArgs, ...args })
     }
 
-    // run the AEM build
+    // run the AEM bundling
     try {
       return aem({ ...defaultBuildArgs, ...defaultAemArgs, ...args }, { ...resolvedOptions, ...result })
     } catch (e) {
