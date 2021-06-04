@@ -101,7 +101,7 @@ module.exports = function (api, options, rootOptions) {
 
     // define zip file destination, based on its source directory.
     const src = api.resolve(bundleOptions.dest)
-    const dest = src.split(path.sep).slice(0, -1).join(path.sep)
+    const dest = bundleOptions.aemDest ? api.resolve(bundleOptions.aemDest) : src.split(path.sep).slice(0, -1).join(path.sep)
     zip(src, { saveTo: path.join(dest, bundleName) }, err => {
       if (err) throw err
 

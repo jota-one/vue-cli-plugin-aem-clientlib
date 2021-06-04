@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [Unreleased]
 - All the code is released \o/
 
+## [0.7.2] - 2021-06-04
+### Added
+- One `aemDest` plugin option. If provided, allows you to define precisely where you want to save the generated crx package.
+
 ## [0.7.1] - 2021-06-04
 ### Changed
 - Ensure that the generated zip file is saved next to its source directory and not systematically in the `/build` directory.
