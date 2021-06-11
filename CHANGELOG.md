@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [Unreleased]
 - All the code is released \o/
 
+## [0.7.3] - 2021-06-11
+### Fixed
+- Handle rawArgs when calling vue-cli-service build command in order to avoid a bug with modern build
+
 ## [0.7.2] - 2021-06-04
 ### Added
 - One `aemDest` plugin option. If provided, allows you to define precisely where you want to save the generated crx package.
@@ -25,7 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0] - 2021-01-22
 TODO
 
-[Unreleased]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.1...develop
+[Unreleased]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.3...develop
+[0.7.3]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.2...0.7.3
+[0.7.2]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.1...0.7.2
 [0.7.1]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.7.0...0.7.1
 [0.7.0]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/jota-one/vue-cli-plugin-aem-clientlib/releases/tag/0.6.0

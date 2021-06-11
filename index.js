@@ -115,13 +115,15 @@ module.exports = function (api, options, rootOptions) {
     usage: 'vue-cli-service buildaem [options]',
     options: {
       '--mode': 'specify env mode (default: production)',
-      '--dest': 'build in a specific directory (default: dist)',
+      '--dest': 'build in a specific directory (default: build/dist)',
+      '--modern': 'make one modern and one legacy es5 build (default: false)',
       '--snapshot': 'append -SNAPSHOT to the generated zip name'
     }
   }, async function (args) {
     const defaultBuildArgs = {
       mode: 'production',
-      dest: api.resolve('build/dist')
+      dest: api.resolve('build/dist'),
+      modern: false
     }
     const defaultAemArgs = {
       snapshot: false
@@ -131,7 +133,14 @@ module.exports = function (api, options, rootOptions) {
     if (resolvedOptions.preBuildPath && fs.existsSync(api.resolve(resolvedOptions.preBuildPath))) {
       await require(api.resolve(resolvedOptions.preBuildPath))(api, resolvedOptions)
     }
-    await api.service.run('build', { ...defaultBuildArgs, ...args })
+
+    // we need to pass the rawArgs to the original build method because they are used
+    // if the service get recursively called, which is the case with --modern build.
+    const rawArgs = [ 'build' ]
+    if (args.modern) {
+      rawArgs.push('--modern')
+    }
+    await api.service.run('build', { ...defaultBuildArgs, ...args }, rawArgs)
 
     let result = {}
     if (resolvedOptions.postBuildPath && fs.existsSync(api.resolve(resolvedOptions.postBuildPath))) {
