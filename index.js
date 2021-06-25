@@ -38,11 +38,6 @@ module.exports = function (api, options, rootOptions) {
     // copy template content
     await copy(api.resolve(bundleOptions.template), api.resolve(bundleOptions.dest))
 
-    // rename the package name directory
-    const insideAemPackagePath = `jcr_root${bundleOptions.aemPackageInternalPath}`
-    const assetsAemSubDirectory = path.join(bundleOptions.dest, insideAemPackagePath, bundleOptions.name)
-    await move(api.resolve(path.join(bundleOptions.dest, insideAemPackagePath, 'webpack-package-name')), api.resolve(assetsAemSubDirectory))
-
     // Update aem properties
     const now = formatISO(new Date(), { representation: 'complete' })
     const replacements = {
@@ -62,34 +57,49 @@ module.exports = function (api, options, rootOptions) {
       })
     })
 
-    console.log(chalk.cyan(' copy webpack build...'))
-    await fs.copy(bundleOptions.aemSource || options.outputDir, api.resolve(assetsAemSubDirectory))
+    // process mappings
+    // handle legacy config variables
+    if (!bundleOptions.mappings) {
+      bundleOptions.mappings = [{
+        src: bundleOptions.aemSource || options.outputDir,
+        packagePath: path.join(bundleOptions.aemPackageInternalPath, bundleOptions.name),
+        isClientLib: bundleOptions.isClientLib
+      }]
+    }
+    for (let mapping of bundleOptions.mappings) {
+      // rename the package name directory
+      const insideAemPackagePath = `jcr_root${mapping.packagePath}`
+      const assetsAemSubDirectory = path.join(bundleOptions.dest, insideAemPackagePath)
 
-    if (bundleOptions.isClientLib) {
-      // generate js.txt and css.txt reference files
-      const baseJs = '#base=js\napp.js'
-      fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
+      console.log(chalk.cyan(` copy ${mapping.src} to ${assetsAemSubDirectory}...`))
+      await fs.copy(mapping.src, api.resolve(assetsAemSubDirectory))
 
-      let cssFiles = []
-      let baseCss = '#base=css\n'
-      let cssPath = ['css']
-      let done = false
-      if (options.css && options.css.extract && typeof options.css.extract === 'object' && options.css.extract.filename) {
-        cssPath = options.css.extract.filename.split('/')
-        cssFiles = [cssPath.pop()]
-        if (cssPath.join('/') !== 'css') {
-          baseCss = `#base=${cssPath.join('/')}\n`
+      if (mapping.isClientLib) {
+        // generate js.txt and css.txt reference files
+        const baseJs = '#base=js\napp.js'
+        fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'js.txt')), baseJs)
+
+        let cssFiles = []
+        let baseCss = '#base=css\n'
+        let cssPath = ['css']
+        let done = false
+        if (options.css && options.css.extract && typeof options.css.extract === 'object' && options.css.extract.filename) {
+          cssPath = options.css.extract.filename.split('/')
+          cssFiles = [cssPath.pop()]
+          if (cssPath.join('/') !== 'css') {
+            baseCss = `#base=${cssPath.join('/')}\n`
+          }
+          done = true
         }
-        done = true
-      }
 
-      if (!done && fs.existsSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))) {
-        cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
-          .filter(file => file.slice(-4) === '.css')
-      }
+        if (!done && fs.existsSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))) {
+          cssFiles = fs.readdirSync(api.resolve(path.join(assetsAemSubDirectory, ...cssPath)))
+            .filter(file => file.slice(-4) === '.css')
+        }
 
-      if (cssFiles.length > 0) {
-        fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
+        if (cssFiles.length > 0) {
+          fs.writeFile(api.resolve(path.join(assetsAemSubDirectory, 'css.txt')), baseCss + cssFiles.join('\n'))
+        }
       }
     }
 

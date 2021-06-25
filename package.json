@@ -1,7 +1,7 @@
 {
   "name": "@jota-one/vue-cli-plugin-aem-clientlib",
-  "version": "0.7.3",
-  "description": "Build a Vue app as a clientlib in AEM. Or simply bundle some part of your build in a crx package.",
+  "version": "0.8.0",
+  "description": "Build a Vue app as a clientlib in AEM. Or simply bundle some parts of your build in a crx package.",
   "main": "index.js",
   "repository": {
     "type": "git",

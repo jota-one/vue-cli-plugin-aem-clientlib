@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 # [Unreleased]
 - All the code is released \o/
 
+## [0.8.0] - 2021-06-24
+### Changed
+- Changed the way to define what should be copied where and added the possibility to copy more than one source to more than one destination (= crx package with several filters)
+
 ## [0.7.3] - 2021-06-11
 ### Fixed
 - Handle rawArgs when calling vue-cli-service build command in order to avoid a bug with modern build

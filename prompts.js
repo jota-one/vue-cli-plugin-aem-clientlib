@@ -21,6 +21,13 @@ module.exports = pkg => {
       default: true
     },
     {
+      name: 'aemPackageInternalPath',
+      type: 'input',
+      message: 'Path inside the AEM package. If you said yes to the previous question, the default is already correct.',
+      validate: input => !!input,
+      default: '/etc/clientlibs/frontend'
+    },
+    {
       name: 'preBuild',
       type: 'confirm',
       message: 'Do you need to execute some script before the vue-cli-service build ?',
@@ -47,13 +54,6 @@ module.exports = pkg => {
       validate: input => !!input,
       when: answers => answers.postBuild,
       default: 'scripts/postbuild.js'
-    },
-    {
-      name: 'aemPackageInternalPath',
-      type: 'input',
-      message: 'Path inside the AEM package. If you said yes to the previous question, the default is already correct.',
-      validate: input => !!input,
-      default: '/etc/clientlibs/frontend'
     },
     {
       name: 'aemPackageGroup',

@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 module.exports = function (api, options) {
   // copy build template
   if (options.installTemplate) {
@@ -17,7 +18,10 @@ module.exports = function (api, options) {
       pluginOptions: {
         buildaem: {
           name: options.projectName,
-          aemPackageInternalPath: options.aemPackageInternalPath,
+          mappings: [{
+            src: 'dist',
+            packagePath: path.join(options.aemPackageInternalPath, options.projectName)
+          }],
           aemPackageGroup: options.aemPackageGroup,
           devBuildSuffix: options.devBuildSuffix,
           ...(options.preBuildPath ? { preBuildPath: options.preBuildPath } : {}),
